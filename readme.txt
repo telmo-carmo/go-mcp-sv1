@@ -27,13 +27,15 @@ func main() {
 	// 1. Open the underlying sql.DB connection using the Bun SQLite shim.
 	// For an in-memory DB use "file::memory:?cache=shared". For a file use a filename like "dev.db".
 	sqldb, err := sql.Open(sqliteshim.ShimName, "file::memory:?cache=shared")
+
+
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
 	defer sqldb.Close()
 
 	// 2. Wrap the sql.DB instance with a Bun Database wrapper using the SQLite dialect
-	db := bun.NewDB(sqldb, sqlitedialect.New())
+	db := bun.NewDB(sqldb, sqlitedialect.New()) // pgdialect.New())
 	defer db.Close()
 
 	// 3. Create the users table if it doesn't already exist
@@ -72,6 +74,11 @@ func main() {
 
 	fmt.Printf("Fetched User from DB: ID=%d, Name=%s, Email=%s, CreatedAt=%v\n",
 		fetchedUser.ID, fetchedUser.Name, fetchedUser.Email, fetchedUser.CreatedAt)
+
+	var users []User
+	db.NewSelect().Model(&users).Scan(ctx)
+	fmt.Printf("Users: %+v\n", users)
+
 }
 
 
