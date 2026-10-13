@@ -22,16 +22,16 @@ func greet(_ context.Context, _ *mcp.CallToolRequest, input greetInput) (*mcp.Ca
 }
 
 type addInput struct {
-	A int `json:"a"`
-	B int `json:"b"`
+	A float64 `json:"a" jsonschema:"The first number to add"`
+	B float64 `json:"b" jsonschema:"The second number to add"`
 }
 type addOutput struct {
-	Result int `json:"result" jsonschema:"The calculated sum of the two numbers"`
+	Result float64 `json:"result" jsonschema:"The calculated sum of the two numbers"`
 }
 
 func add(_ context.Context, _ *mcp.CallToolRequest, input addInput) (*mcp.CallToolResult, any, error) {
 	sum := input.A + input.B
-	log.Printf("[INFO] Adding %d and %d, result: %d", input.A, input.B, sum)
+	log.Printf("[INFO] Adding %f and %f, result: %f", input.A, input.B, sum)
 	return nil, addOutput{Result: sum}, nil
 }
 
