@@ -6,3 +6,8 @@ go-mcp-sv1: server1.go
 upd:
 	go get -u -v
 	go mod tidy
+
+clean:
+	@echo "Cleaning up..."
+	@rm -f go-mcp-sv1
+	
