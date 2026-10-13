@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -21,15 +20,17 @@ func greet(_ context.Context, _ *mcp.CallToolRequest, input greetInput) (*mcp.Ca
 	}, nil, nil
 }
 
-func add(_ context.Context, _ *mcp.CallToolRequest, input struct {
+type addInput struct {
 	A int `json:"a"`
 	B int `json:"b"`
-}) (*mcp.CallToolResult, any, error) {
-	return &mcp.CallToolResult{
-		Content: []mcp.Content{
-			&mcp.TextContent{Text: "The sum is: " + strconv.Itoa(input.A+input.B)},
-		},
-	}, nil, nil
+}
+type AddOutput struct {
+	Result int `json:"result" jsonschema:"The calculated sum of the two numbers"`
+}
+
+func add(_ context.Context, _ *mcp.CallToolRequest, input addInput) (*mcp.CallToolResult, any, error) {
+	sum := input.A + input.B
+	return nil, AddOutput{Result: sum}, nil
 }
 
 func main() {
@@ -43,7 +44,7 @@ func main() {
 	}, greet)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "add",
-		Description: "Add two numbers.",
+		Description: "Add two int numbers.",
 	}, add)
 
 	mux := http.NewServeMux()
