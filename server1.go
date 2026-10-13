@@ -1,5 +1,12 @@
 package main
 
+/*
+run:
+
+npx @modelcontextprotocol/inspector
+
+*/
+
 import (
 	"context"
 	"log"

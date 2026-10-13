@@ -1,7 +1,8 @@
 @host1 = http://localhost:8080
 
 
-@the-mcp-session-id = UKPGXOPSJYRRSE3T65EF5VZAUC
+@the-mcp-session-id = QB5TOYWHVRJNRWY3TCGE57SEE4
+
 
 
 
@@ -74,7 +75,7 @@ Mcp-Name: add
 
 {
     "jsonrpc":"2.0",
-    "id":  {{$randomInt 10 10000}},
+    "id":  {{$randomInt 10 1000}},
     "method":"tools/call",
     "params":{
         "name":"add",
