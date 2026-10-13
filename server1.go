@@ -31,7 +31,7 @@ type addOutput struct {
 
 func add(_ context.Context, _ *mcp.CallToolRequest, input addInput) (*mcp.CallToolResult, any, error) {
 	sum := input.A + input.B
-	log.Printf("[INFO] Adding %f and %f, result: %f", input.A, input.B, sum)
+	log.Printf("[INFO] Adding %.2f and %.2f, result: %.2f", input.A, input.B, sum)
 	return nil, addOutput{Result: sum}, nil
 }
 
@@ -46,7 +46,7 @@ func main() {
 	}, greet)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "add",
-		Description: "Add two int numbers.",
+		Description: "Add two numbers.",
 	}, add)
 
 	mux := http.NewServeMux()
