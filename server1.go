@@ -13,6 +13,7 @@ type greetInput struct {
 }
 
 func greet(_ context.Context, _ *mcp.CallToolRequest, input greetInput) (*mcp.CallToolResult, any, error) {
+	log.Printf("[WARN] Greeting %s", input.In)
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			&mcp.TextContent{Text: "Hello, " + input.In + "!"},
@@ -30,6 +31,7 @@ type addOutput struct {
 
 func add(_ context.Context, _ *mcp.CallToolRequest, input addInput) (*mcp.CallToolResult, any, error) {
 	sum := input.A + input.B
+	log.Printf("[INFO] Adding %d and %d, result: %d", input.A, input.B, sum)
 	return nil, addOutput{Result: sum}, nil
 }
 
@@ -53,6 +55,6 @@ func main() {
 	}, nil))
 
 	const address = "localhost:8080"
-	log.Printf("MCP server listening at http://%s/mcp", address)
+	log.Printf("[INFO] MCP server listening at http://%s/mcp", address)
 	log.Fatal(http.ListenAndServe(address, mux))
 }
