@@ -24,13 +24,13 @@ type addInput struct {
 	A int `json:"a"`
 	B int `json:"b"`
 }
-type AddOutput struct {
+type addOutput struct {
 	Result int `json:"result" jsonschema:"The calculated sum of the two numbers"`
 }
 
 func add(_ context.Context, _ *mcp.CallToolRequest, input addInput) (*mcp.CallToolResult, any, error) {
 	sum := input.A + input.B
-	return nil, AddOutput{Result: sum}, nil
+	return nil, addOutput{Result: sum}, nil
 }
 
 func main() {
