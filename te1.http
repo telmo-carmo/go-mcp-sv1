@@ -1,0 +1,82 @@
+@host1 = http://localhost:8080
+
+
+@the-mcp-session-id = RZGL7G2LQC7GNHNAYWDGTAKCAA
+
+POST {{host1}}/mcp
+Content-Type: application/json
+Accept: application/json
+Accept:  text/event-stream
+
+{
+  "jsonrpc": "2.0",
+  "id": 9026,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2026-07-28",
+    "capabilities": {},
+    "clientInfo": {
+      "name": "rest-client-probe-26-07-28",
+      "version": "1.0.0"
+    }
+  }
+}
+###
+POST {{host1}}/mcp
+Content-Type: application/json
+Accept: application/json
+Accept:  text/event-stream
+Mcp-Method: tools/list
+Mcp-session-id: {{the-mcp-session-id}}
+
+{
+    "jsonrpc":"2.0",
+    "id": {{$randomInt 26 1000}},
+    "method": "tools/list",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol.protocolVersion": "2026-07-28",
+        "clientCapabilities": {
+          "tools": {}
+        }
+      }
+    }
+}
+###
+POST {{host1}}/mcp
+Content-Type: application/json
+Accept: application/json
+Accept:  text/event-stream
+Mcp-session-id: {{the-mcp-session-id}}
+Mcp-Method: tools/call
+Mcp-Name: greet
+
+{
+    "jsonrpc":"2.0",
+    "id":  {{$randomInt 10 10000}},
+    "method":"tools/call",
+    "params":{
+        "name":"greet",
+        "arguments":{"in":"alice-{{$randomInt 1 20}}"}
+    }
+}
+###
+
+POST {{host1}}/mcp
+Content-Type: application/json
+Accept: application/json
+Accept:  text/event-stream
+Mcp-session-id: {{the-mcp-session-id}}
+Mcp-Method: tools/call
+Mcp-Name: add
+
+{
+    "jsonrpc":"2.0",
+    "id":  {{$randomInt 10 10000}},
+    "method":"tools/call",
+    "params":{
+        "name":"add",
+        "arguments":{"a": {{$randomInt 1 10}}, "b": {{$randomInt 1 10}}}
+    }
+}
+###
