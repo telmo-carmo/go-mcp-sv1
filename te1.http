@@ -1,9 +1,7 @@
 @host1 = http://localhost:8080
 
 
-@the-mcp-session-id = K2QGG6G5YS36QNZMDZQDFYOKMN
-
-
+@the-mcp-session-id = 46KGGSVBSOZ7GTU77MOLBJNT6B
 
 
 POST {{host1}}/mcp

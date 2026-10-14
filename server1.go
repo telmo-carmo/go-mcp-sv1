@@ -56,6 +56,8 @@ func counterHandler(_ context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp
 }
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "go-mcp-sv1",
 		Version: "1.0.0",
