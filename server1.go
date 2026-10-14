@@ -49,6 +49,12 @@ type counterOutput struct {
 	Value int64 `json:"value" jsonschema:"The counter value"`
 }
 
+func counterHandler(_ context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, any, error) {
+	nv := counter.Add(1)
+	log.Printf("[INFO] Counter incremented, new value: %d", nv)
+	return nil, counterOutput{Value: nv}, nil
+}
+
 func main() {
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "go-mcp-sv1",
@@ -65,11 +71,7 @@ func main() {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "counter",
 		Description: "Increment and return the counter.",
-	}, func(_ context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, any, error) {
-		nv := counter.Add(1)
-		log.Printf("[INFO] Counter incremented, new value: %d", nv)
-		return nil, counterOutput{Value: nv}, nil
-	})
+	}, counterHandler)
 
 	mux := http.NewServeMux()
 	mux.Handle("/mcp", mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server {
