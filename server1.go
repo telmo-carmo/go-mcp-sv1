@@ -11,6 +11,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"sync/atomic"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -42,6 +43,12 @@ func add(_ context.Context, _ *mcp.CallToolRequest, input addInput) (*mcp.CallTo
 	return nil, addOutput{Result: sum}, nil
 }
 
+var counter atomic.Int64
+
+type counterOutput struct {
+	Value int64 `json:"value" jsonschema:"The counter value"`
+}
+
 func main() {
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "go-mcp-sv1",
@@ -55,6 +62,14 @@ func main() {
 		Name:        "add",
 		Description: "Add two numbers.",
 	}, add)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "counter",
+		Description: "Increment and return the counter.",
+	}, func(_ context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, any, error) {
+		nv := counter.Add(1)
+		log.Printf("[INFO] Counter incremented, new value: %d", nv)
+		return nil, counterOutput{Value: nv}, nil
+	})
 
 	mux := http.NewServeMux()
 	mux.Handle("/mcp", mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server {

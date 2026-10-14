@@ -1,7 +1,7 @@
 @host1 = http://localhost:8080
 
 
-@the-mcp-session-id = QB5TOYWHVRJNRWY3TCGE57SEE4
+@the-mcp-session-id = W63OSVQBLU3EOYJXUQTIIPQRAR
 
 
 
@@ -80,6 +80,24 @@ Mcp-Name: add
     "params":{
         "name":"add",
         "arguments":{"a": {{$randomInt 1 10}}, "b": {{$randomInt 1 10}}}
+    }
+}
+###
+POST {{host1}}/mcp
+Content-Type: application/json
+Accept: application/json
+Accept:  text/event-stream
+Mcp-session-id: {{the-mcp-session-id}}
+Mcp-Method: tools/call
+Mcp-Name: counter
+
+{
+    "jsonrpc":"2.0",
+    "id":  {{$randomInt 10 1000}},
+    "method":"tools/call",
+    "params":{
+        "name":"counter",
+        "arguments":{}
     }
 }
 ###
