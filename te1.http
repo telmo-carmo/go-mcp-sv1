@@ -1,7 +1,9 @@
 @host1 = http://localhost:8080
 
 
-@the-mcp-session-id = 46KGGSVBSOZ7GTU77MOLBJNT6B
+@the-mcp-session-id = LMBRGDH757LSFDOET4E5ZJAEDF
+
+@tok = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3OTI3MDQ0NDgsInVzZXIiOiJqb2UtMiJ9.7y-BfEwnHRIp3rDk0vHW2c8CFRD3uSMnHB299Rzyc8c
 
 
 POST {{host1}}/mcp
@@ -67,6 +69,7 @@ POST {{host1}}/mcp
 Content-Type: application/json
 Accept: application/json
 Accept:  text/event-stream
+Authorization: Bearer {{tok}}
 Mcp-session-id: {{the-mcp-session-id}}
 Mcp-Method: tools/call
 Mcp-Name: add
@@ -85,6 +88,7 @@ POST {{host1}}/mcp
 Content-Type: application/json
 Accept: application/json
 Accept:  text/event-stream
+Authorization: Bearer {{tok}}
 Mcp-session-id: {{the-mcp-session-id}}
 Mcp-Method: tools/call
 Mcp-Name: counter
@@ -96,6 +100,26 @@ Mcp-Name: counter
     "params":{
         "name":"counter",
         "arguments":{}
+    }
+}
+###
+POST {{host1}}/mcp
+Content-Type: application/json
+Accept: application/json
+Accept:  text/event-stream
+Mcp-session-id: {{the-mcp-session-id}}
+Mcp-Method: tools/call
+Mcp-Name: token
+
+{
+    "jsonrpc":"2.0",
+    "id":  {{$randomInt 10 1000}},
+    "method":"tools/call",
+    "params":{
+        "name":"token",
+        "arguments":{ 
+            "username": "joe-{{$randomInt 1 20}}"
+        }
     }
 }
 ###

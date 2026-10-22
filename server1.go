@@ -11,9 +11,16 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"sync/atomic"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+const (
+	MY_JWT_SECRET = "A Very Secret Key for JWT!"
 )
 
 type greetInput struct {
@@ -55,6 +62,32 @@ func counterHandler(_ context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp
 	return nil, counterOutput{Value: nv}, nil
 }
 
+type tokenOutput struct {
+	Token string `json:"value" jsonschema:"The JWT token value"`
+}
+
+type tokenInput struct {
+	Username string `json:"username" jsonschema:"The username to include in the JWT"`
+}
+
+func tokenHandler(_ context.Context, _ *mcp.CallToolRequest, req tokenInput) (*mcp.CallToolResult, any, error) {
+	claims := jwt.MapClaims{
+		"user": req.Username,
+		"exp":  time.Now().Add(time.Hour).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	key := MY_JWT_SECRET
+	if envKey := os.Getenv("MY_JWT_SECRET"); envKey != "" {
+		key = envKey
+	}
+	signedToken, err := token.SignedString([]byte(key))
+	if err != nil {
+		return nil, nil, err
+	}
+	log.Printf("[INFO] Generated JWT for user %s: %s", req.Username, signedToken)
+	return nil, tokenOutput{Token: signedToken}, nil
+}
+
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
@@ -74,6 +107,10 @@ func main() {
 		Name:        "counter",
 		Description: "Increment and return the counter.",
 	}, counterHandler)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "token",
+		Description: "Generate a new JWT.",
+	}, tokenHandler)
 
 	mux := http.NewServeMux()
 	mux.Handle("/mcp", mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server {
