@@ -151,3 +151,6 @@ Accept: application/json
 GET {{host1}}/api/bonus/SCOTT
 
 ###
+GET  {{host1}}//health
+
+###
