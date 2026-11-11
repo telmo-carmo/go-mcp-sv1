@@ -140,12 +140,25 @@ func tokenHandler(_ context.Context, _ *mcp.CallToolRequest, req tokenInput) (*m
 	return nil, tokenOutput{Token: signedToken}, nil
 }
 
+func getBookHandler(_ context.Context, req *mcp.CallToolRequest, input struct{ ID uint }) (*mcp.CallToolResult, any, error) {
+	if err := authorizeTool(req); err != nil {
+		return nil, nil, err
+	}
+	ctx := context.Background()
+	book, err := dal.GetBookByID(ctx, input.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+	return nil, book, nil
+}
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Error().Msg("Error loading .env file")
 	}
 	if err := dal.InitDatabase(); err != nil {
 		log.Fatal().Err(err).Msg("Failed to initialize database")
+		return
 	}
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "go-mcp-sv1",
@@ -167,11 +180,17 @@ func main() {
 		Name:        "token",
 		Description: "Generate a new JWT.",
 	}, tokenHandler)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "getBook",
+		Description: "Get a book by ID.",
+	}, getBookHandler)
 
 	mux := http.NewServeMux()
 	mux.Handle("/mcp", mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server {
 		return server
 	}, nil))
+
+	mux.Handle("/api/bonus", http.HandlerFunc(dal.BonusHandler))
 
 	const address = "localhost:8080"
 	log.Info().Str("address", "http://"+address+"/mcp").Msg("MCP server listening")

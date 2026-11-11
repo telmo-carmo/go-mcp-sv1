@@ -2,6 +2,8 @@ package dal
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 
 	"github.com/phuslu/log"
 )
@@ -54,4 +56,49 @@ func DeleteBonus(ctx context.Context, name string) error {
 		log.Error().Err(err).Msgf("Failed to delete bonus with name: %s", name)
 	}
 	return err
+}
+
+func BonusHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	switch r.Method {
+	case http.MethodGet:
+		name := r.URL.Query().Get("name")
+		bonus, err := GetBonusByName(ctx, name)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(bonus)
+	case http.MethodPost:
+		var bonus Bonus
+		if err := json.NewDecoder(r.Body).Decode(&bonus); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if err := CreateBonus(ctx, &bonus); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusCreated)
+	case http.MethodPut:
+		var bonus Bonus
+		if err := json.NewDecoder(r.Body).Decode(&bonus); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if err := UpdateBonus(ctx, &bonus); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	case http.MethodDelete:
+		name := r.URL.Query().Get("name")
+		if err := DeleteBonus(ctx, name); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
 }
