@@ -63,6 +63,10 @@ func authorizeTool(req *mcp.CallToolRequest) error {
 	if !token.Valid || claims.ExpiresAt == nil || strings.TrimSpace(claims.User) == "" {
 		return errors.New("bearer JWT must be valid, unexpired, and contain user and exp claims")
 	}
+
+	// get Claim "user" and log it
+	user := claims.User
+	log.Info().Str("JWT Claim user", user).Msg("Authorized user")
 	return nil
 }
 

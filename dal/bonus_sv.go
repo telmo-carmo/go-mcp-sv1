@@ -63,6 +63,16 @@ func BonusHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		name := r.URL.Query().Get("name")
+		if name == "" {
+			bonuses, err := GetAllBonus(ctx)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			json.NewEncoder(w).Encode(bonuses)
+			return
+		}
+
 		bonus, err := GetBonusByName(ctx, name)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
