@@ -15,9 +15,11 @@ import (
 	"os"
 	"strings"
 	"sync/atomic"
+	"tac/go-mcp-sv1/dal"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/phuslu/log"
 )
@@ -139,6 +141,12 @@ func tokenHandler(_ context.Context, _ *mcp.CallToolRequest, req tokenInput) (*m
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Error().Msg("Error loading .env file")
+	}
+	if err := dal.InitDatabase(); err != nil {
+		log.Fatal().Err(err).Msg("Failed to initialize database")
+	}
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "go-mcp-sv1",
 		Version: "1.0.0",
