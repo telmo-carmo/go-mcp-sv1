@@ -11,7 +11,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -20,6 +19,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/phuslu/log"
 )
 
 const (
@@ -69,7 +69,7 @@ type greetInput struct {
 }
 
 func greet(_ context.Context, _ *mcp.CallToolRequest, input greetInput) (*mcp.CallToolResult, any, error) {
-	log.Printf("[WARN] Greeting %s", input.In)
+	log.Warn().Str("name", input.In).Msg("Greeting")
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			&mcp.TextContent{Text: "Hello, " + input.In + "!"},
@@ -90,7 +90,11 @@ func add(_ context.Context, req *mcp.CallToolRequest, input addInput) (*mcp.Call
 		return nil, nil, err
 	}
 	sum := input.A + input.B
-	log.Printf("[INFO] Adding %.2f and %.2f, result: %.2f", input.A, input.B, sum)
+	log.Info().
+		Float64("a", input.A).
+		Float64("b", input.B).
+		Float64("result", sum).
+		Msg("Adding numbers")
 	return nil, addOutput{Result: sum}, nil
 }
 
@@ -105,7 +109,7 @@ func counterHandler(_ context.Context, req *mcp.CallToolRequest, _ struct{}) (*m
 		return nil, nil, err
 	}
 	nv := counter.Add(1)
-	log.Printf("[INFO] Counter incremented, new value: %d", nv)
+	log.Info().Int64("value", nv).Msg("Counter incremented")
 	return nil, counterOutput{Value: nv}, nil
 }
 
@@ -127,13 +131,14 @@ func tokenHandler(_ context.Context, _ *mcp.CallToolRequest, req tokenInput) (*m
 	if err != nil {
 		return nil, nil, err
 	}
-	log.Printf("[INFO] Generated JWT for user %s: %s", req.Username, signedToken)
+	log.Info().
+		Str("user", req.Username).
+		Str("token", signedToken).
+		Msg("Generated JWT")
 	return nil, tokenOutput{Token: signedToken}, nil
 }
 
 func main() {
-	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
-
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "go-mcp-sv1",
 		Version: "1.0.0",
@@ -161,6 +166,6 @@ func main() {
 	}, nil))
 
 	const address = "localhost:8080"
-	log.Printf("[INFO] MCP server listening at http://%s/mcp", address)
-	log.Fatal(http.ListenAndServe(address, mux))
+	log.Info().Str("address", "http://"+address+"/mcp").Msg("MCP server listening")
+	log.Fatal().Err(http.ListenAndServe(address, mux)).Msg("MCP server failed")
 }
