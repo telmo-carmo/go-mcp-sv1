@@ -30,10 +30,12 @@ type Product struct {
 }
 
 type Bonus struct {
-	Ename string `json:"ename"`
-	Job   string `json:"job"`
-	Sal   int    `json:"sal"`
-	Comm  int    `json:"comm"`
+	bun.BaseModel `bun:"table:bonus"`
+
+	Ename string `json:"ename" bun:"ENAME,pk"`
+	Job   string `json:"job" bun:"JOB"`
+	Sal   int    `json:"sal" bun:"SAL"`
+	Comm  int    `json:"comm" bun:"COMM"`
 }
 
 type Dept struct {

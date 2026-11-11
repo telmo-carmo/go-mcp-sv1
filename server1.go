@@ -195,6 +195,7 @@ func main() {
 	}, nil))
 
 	mux.Handle("/api/bonus", http.HandlerFunc(dal.BonusHandler))
+	mux.Handle("/api/bonus/{name}", http.HandlerFunc(dal.BonusHandler))
 
 	const address = "localhost:8080"
 	log.Info().Str("address", "http://"+address+"/mcp").Msg("MCP server listening")

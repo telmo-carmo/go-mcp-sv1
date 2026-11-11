@@ -62,7 +62,7 @@ func BonusHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	switch r.Method {
 	case http.MethodGet:
-		name := r.URL.Query().Get("name")
+		name := r.PathValue("name")
 		if name == "" {
 			bonuses, err := GetAllBonus(ctx)
 			if err != nil {
@@ -102,7 +102,8 @@ func BonusHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 	case http.MethodDelete:
-		name := r.URL.Query().Get("name")
+		//name := r.URL.Query().Get("name")
+		name := r.PathValue("name")
 		if err := DeleteBonus(ctx, name); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

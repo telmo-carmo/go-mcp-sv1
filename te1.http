@@ -148,3 +148,6 @@ GET {{host1}}/api/bonus
 Accept: application/json
 
 ###
+GET {{host1}}/api/bonus/SCOTT
+
+###
